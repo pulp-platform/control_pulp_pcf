@@ -1,0 +1,18 @@
+#!/bin/bash
+
+source $FREERTOS_PROJ_ROOT/env/control-pulp.sh
+
+export PCF_TARGET=PMS_CV32
+export PCF_PLATFORM=NO_IO
+
+cd $PCF_PATH
+
+#CI TEST
+#make clean RISCV="/usr/pack/riscv-1.0-kgf/pulp-gcc-2.5.0-rc1" CFLAGS="-Og -g3 -march=rv32imc_zfinx_xcorev -mabi=ilp32" ASFLAGS="-Os -g3 -march=rv32imc_zfinx_xcorev -mabi=ilp32" MAKE_FLAGS="-DUSE_INSTRUCTIONS_COMPOSITION -DTASKS_PERIOD_MULTIPLIER=1 -DCI_TEST -DCI_TEST_ITERATION=10 -UMEASURE_ACTIVE -DPRINTF_ACTIVE -DPCF_FREERTOS_TICK_RATE_HZ=1000 -DDEFAULT_SYSTEM_CLOCK=100000000u" all run gui=1
+
+make RISCV="/usr/pack/riscv-1.0-kgf/pulp-gcc-2.5.0-rc1" CFLAGS="-Og -g3 -march=rv32imac_zfinx_xcorev -mabi=ilp32 -DFEATURE_CLUSTER=1 -D__PULP__=1 -DDEBUG" ASFLAGS="-Os -g3 -march=rv32imac_zfinx_xcorev -mabi=ilp32" MAKE_FLAGS="-DTASKS_PERIOD_MULTIPLIER=5 -UCI_TEST -DMEASURE_ACTIVE=1 -DMEASURE_N_ITERATION=10 -DMEASURE_N_OUTPUTS=72 -DPRINTF_ACTIVE -DPCF_FREERTOS_TICK_RATE_HZ=1000 -DDEFAULT_SYSTEM_CLOCK=100000000u -DPCF_USE_CLUSTER" clean all run gui=1
+
+#Cycles print (Timer)
+#make clean RISCV="/usr/pack/riscv-1.0-kgf/pulp-gcc-2.5.0-rc1" CFLAGS="-Og -g3 -march=rv32imc_zfinx_xcorev -mabi=ilp32" ASFLAGS="-Os -g3 -march=rv32imc_zfinx_xcorev -mabi=ilp32" MAKE_FLAGS="-DUSE_INSTRUCTIONS_COMPOSITION -DTASKS_PERIOD_MULTIPLIER=1 -UCI_TEST -DMEASURE_ACTIVE=1 -DMEASURE_N_ITERATION=10 -DMEASURE_N_OUTPUTS=64 -DPRINTF_ACTIVE -DPCF_FREERTOS_TICK_RATE_HZ=1000 -DDEFAULT_SYSTEM_CLOCK=100000000u" all run
+
+cd
