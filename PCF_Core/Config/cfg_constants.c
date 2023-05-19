@@ -16,7 +16,7 @@
 * limitations under the License.
 *
 * SPDX-License-Identifier: Apache-2.0
-* Author: Giovanni Bambini (gv.bambini@gmai.com)
+* Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
 

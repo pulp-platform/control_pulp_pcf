@@ -1,3 +1,4 @@
+
 # PCF PROJECT
 ## AN OPEN-SOURCE POWER AND TEMPERATURE CONTROL FIRMWARE
 
@@ -225,8 +226,9 @@ Structure:
     default_* contains all default values for configuration global var
     there are n (5) global config var
     there are p (2) global parameter var
-    
+
 ## Licenses
 Description of all the licenses used in the repository. In general we use Apache
 2.0 except for some cases where it makes sense to use the underlying code's
 original license. For example FreeRTOSConfig.h file
+

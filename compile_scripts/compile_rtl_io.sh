@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 source $FREERTOS_PROJ_ROOT/env/control-pulp.sh
