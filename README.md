@@ -1,5 +1,3 @@
-GSL: ./configure --host=riscv32-unknown-elf --build=x86_64-pc-linux-gnu --target=riscv32-unknown-elf --prefix=/usr/pack/riscv-1.0-kgf/pulp-gcc-2.5.0-rc1/bin/ CFLAGS="-march=rv32imc_zfinx_xcorev -mabi=ilp32"
-
 # PCF PROJECT
 ## AN OPEN-SOURCE POWER AND TEMPERATURE CONTROL FIRMWARE
 
@@ -227,3 +225,8 @@ Structure:
     default_* contains all default values for configuration global var
     there are n (5) global config var
     there are p (2) global parameter var
+    
+## Licenses
+Description of all the licenses used in the repository. In general we use Apache
+2.0 except for some cases where it makes sense to use the underlying code's
+original license. For example FreeRTOSConfig.h file
