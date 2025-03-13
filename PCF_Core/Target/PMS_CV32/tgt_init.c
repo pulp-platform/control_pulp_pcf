@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,16 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-/********************************************************/
-/*
-* File:
-* Notes:
-*
-* Written by: Eventine (UNIBO)
-*
-*********************************************************/
 
 #include "tgt_init.h"
 
@@ -56,10 +45,13 @@
 #include "print_float.h"
 #endif
 
+#ifdef SCMI_ACTIVE
+#include "scmi_handler.h"
+#endif
+
 
 varBool_e bTargetSetVoltage(int iVoltage)
 {
-
     //Nothing to do here
     return PCF_TRUE;
 }
@@ -85,11 +77,11 @@ varBool_e bTargetInitFrequency(void)
 }
 varBool_e bTargetInitHw(void)
 {
+    varBool_e return_value = PCF_TRUE;
+
     system_init();
 
 #ifdef PCF_USE_CLUSTER
-
-    varBool_e return_value = PCF_TRUE;
 
     /* Disable printf output buffering to prevent cluster cores clobbering
     * shared buffer. */
@@ -103,5 +95,11 @@ varBool_e bTargetInitHw(void)
     bTargetClusterInit();
 #endif
 
-    return PCF_TRUE;
+#ifdef SCMI_ACTIVE
+    scmi_init();
+    //TODO: SCMI ENABLE
+	enable_scmi_interrupt();
+#endif
+
+    return return_value;
 }

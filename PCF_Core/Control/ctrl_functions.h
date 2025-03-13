@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -20,17 +19,6 @@
 *
 **************************************************************************/
 
-
-/********************************************************/
-/*
-* File: ctrl_functions.h
-* Notes:
-*
-*
-* Written by: Eventine (UNIBO)
-*
-*********************************************************/
-
 #ifndef _CTRL_FUNCTIONS_H_
 #define _CTRL_FUNCTIONS_H_
 
@@ -42,11 +30,45 @@
 //TODO
 #include "ctrl_math.h"
 
+//forward declaration
+struct ctrl_task_index;
 
-void vMainTaskControlInit (void);
-void vMainTaskControlAlgorithm (void);
+struct function_param {
+	//TODO: warning: assignment to 'varValue (*)(varFor,  varFor,  varFor,  void **)' 
+		//{aka 'float (*)(int,  int,  int,  void **)'} from incompatible pointer type 
+		//'void (*)(varFor,  varFor,  varFor,  void **)' {aka 'void (*)(int,  int,  int,  void **)'} 
+		//[-Wincompatible-pointer-types]
+	varValue (*f)(varFor, varFor, varFor, struct ctrl_task_index*, void**);
+	varFor total_iterations;
+	varFor parall_num;
+	int exec_time;
+	void** ptr_args;
+    struct ctrl_task_index *igl;
+	int num_args;
+	varValue* return_value;
+};
+
+struct ctrl_task_index {
+	ctrl_config_table_t *config_ctrl;
+	config_sys_t *config_sys;
+    ctrl_values_table_t *values;
+    ctrl_inputs_t *inputs;
+	telemetry_t *tel;
+	task_param_t *tp;
+	struct function_param* fp;
+};
+
+
+void vMainTaskControlInit (task_param_t * tp);
+void vMainTaskControlAlgorithm (task_param_t * tp);
 void vTelemetryManagement(void);
 
+void vDummyCluster(void *args);
 
+//TODO change name and move position
+void vConfigValueCtrlInit(ctrl_values_table_t *values);
+
+//TODO REMOVE:
+int abrakazam;
 
 #endif //lib #ifdef

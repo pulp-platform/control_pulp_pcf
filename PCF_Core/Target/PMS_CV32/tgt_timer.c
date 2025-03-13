@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,16 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-/********************************************************/
-/*
-* File:
-* Notes:
-*
-* Written by: Eventine (UNIBO)
-*
-*********************************************************/
 
 #include "tgt_timer.h"
 
@@ -51,7 +40,7 @@
 #endif
 
 
-#define TIMER_FREQ_HZ           32000
+#define TIMER_FREQ_HZ           32000 //TODO
 #define MIN_TIMER_US            (CONST_US_IN_A_SEC / TIMER_FREQ_HZ)
 
 // Use TIMER1_HI

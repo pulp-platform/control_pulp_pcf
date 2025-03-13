@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,16 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-
-/***************************************************/
-/*
-* Task and function library.
-*
-*
-*/
-
 
 #ifndef _PCF_TASKS_H_
 #define _PCF_TASKS_H_

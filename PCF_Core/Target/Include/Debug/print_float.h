@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -20,13 +19,11 @@
 *
 **************************************************************************/
 
-
-
-
 #ifndef PRINT_FLOAT_H
 #define PRINT_FLOAT_H
 
 float fAbs(float x);
+void printFloatnl(float f);
 void printFloat(float f);
 
 #endif

@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -20,17 +19,14 @@
 *
 **************************************************************************/
 
-
-/***************************************************/
-/*
-* Task and function library.
-*
-*
-*/
-
-
 #ifndef _CTRL_TASKS_H_
 #define _CTRL_TASKS_H_
+
+#include "cfg_types.h"
+#include "cfg_system.h"
+#include "cfg_control.h"
+#include "cfg_constants.h"
+#include "cfg_firmware.h"
 
 /* FreeRTOS Inclusions. */
 

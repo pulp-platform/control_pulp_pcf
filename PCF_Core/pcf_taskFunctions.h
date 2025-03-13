@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -20,16 +19,6 @@
 *
 **************************************************************************/
 
-
-/********************************************************/
-/*
-* File:
-* Notes:
-*
-* Written by: Eventine (UNIBO)
-*
-*********************************************************/
-
 #ifndef _PCF_TASK_FUNCT_H_
 #define _PCF_TASK_FUNCT_H_
 
@@ -40,8 +29,8 @@
 /* Other */ //TBU
 #include <stddef.h> //size_t
 
-varBool_e bReadGlobalVariable(void* oAddress, pcf_global_var_e i_var_name, size_t i_var_dim, uint32_t i_caller_id);
-varBool_e bWriteGlobalVariable(void* iAddress, pcf_global_var_e i_var_name, global_var_write_cmd_e i_cmd, size_t i_var_dim, uint32_t i_caller_id);
+//varBool_e bReadGlobalVariable(void* oAddress, pcf_global_var_e i_var_name, size_t i_var_dim, uint32_t i_caller_id);
+//varBool_e bWriteGlobalVariable(void* iAddress, pcf_global_var_e i_var_name, global_var_write_cmd_e i_cmd, size_t i_var_dim, uint32_t i_caller_id);
 
 uint32_t* bSecureGetErrorMapAddress(int task_id);
 

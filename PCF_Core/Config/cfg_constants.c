@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,17 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-/********************************************************/
-/*
-* File:
-* Date:
-* Notes:
-*
-* Written by: Eventine (UNIBO)
-*
-/********************************************************/
 
 /* Libraries Inclusion */
 #include "cfg_constants.h"

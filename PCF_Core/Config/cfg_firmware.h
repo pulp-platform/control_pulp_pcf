@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -20,18 +19,6 @@
 *
 **************************************************************************/
 
-
-/********************************************************/
-/*
-* File: cfg_firmware.h
-* Notes: This files holds the definitions, structs and
-*           global var regarding the firmware structure and
-*           code.
-*
-* Written by: Eventine (UNIBO)
-*
-*********************************************************/
-
 #ifndef _PCF_FIRMWARE_CONFIG_H_
 #define _PCF_FIRMWARE_CONFIG_H_
 
@@ -42,6 +29,7 @@
 /* Libraries Inclusion */
 #include "cfg_types.h"
 #include "cfg_system.h"
+#include "cfg_control.h"
 
 
 /** Definitions **/
@@ -69,47 +57,23 @@
 #define TAP_INTERVAL_APPROXIMATE_CEIL
 
 
-/** GAP8 SPI **/
-#define SPI_SPEED_MUL						10000 // default: 1500
-/** GAP8 Cluster **/
-//#define PULP_USE_CLUSTER
-// the stack dimension in bytes for data of each PCore
-#define PCORE_STACK_SIZE 					2048
 /****** Private END ******/
 
 
 /******************************/
 /** Firmware Configuration ****/
 /******************************/
-typedef struct _tasks_config_table {
+struct tasks_config_table {
 
 	/**** Tasks Configuration *****/
-	uint16_t tap_period_us; 						// Time in us //when change this also hange TELEMETRY_POLLING_FREQUENCY
+	uint32_t tap_period_us; 						// Time in us //when change this also hange TELEMETRY_POLLING_FREQUENCY
 	//following values will be floored down to a multiple of the tap period.
     uint32_t tasks_period_us[MAX_NUM_TASKS];		// period in us. 0 for non-periodic tasks
-    uint16_t tasks_tap_multiplier[MAX_NUM_TASKS];	// internal
-    uint16_t tasks_priority[MAX_NUM_TASKS];			// task priority (higher number = more important)
-    /* periodic_ctrl_period_us;
-	uint16_t task_os_period_us;
+    uint32_t tasks_tap_multiplier[MAX_NUM_TASKS];	// internal
+    uint32_t tasks_priority[MAX_NUM_TASKS];			// task priority (higher number = more important)
+};
 
-	// Priority
-	uint16_t periodic_ctrl_task_priority;
-	uint16_t rear_ctrl_task_priority;
-	uint16_t fast_ctrl_task_priority;
-	uint16_t comms_task_priority;
-	uint16_t main_task_priority;
-	uint16_t user_defined_task_priority;
-	#if (defined(DEBUG_ACTIVE) || (MEASURE_ACTIVE == 1))
-		uint16_t debug_task_priority;
-	#endif
-	*/
-
-	/*** Telemetry Configuration **/
-	uint32_t telemetry_polling_period_us;
-} tasks_config_table_t;
-
-
-typedef struct _code_config_table {
+struct code_config_table {
 
 	/***** Code configuration *****/
 	varBool_e use_watchdogs;
@@ -117,38 +81,34 @@ typedef struct _code_config_table {
 	varBool_e use_tests_on_numbers;		//TODO: configASSERT seem not to work
 
 	/*** Telemetry Configuration **/
-	varBool_e use_frequency_reduction_map;				// to collect the information on the Frequency Reduction causes
 	varBool_e use_error_map;
-} code_config_table_t;
+};
 
-
-typedef struct _telemetry {
-	//TODO: Need to adjust this because we are passing only 1 Power (either Total or Mean)
-	sensor_data_t core_avg_sensor_data[MAX_NUM_CORE];
-	varValue core_avg_estimated_power[MAX_NUM_CORE];
-	varValue chip_avg_estimated_power;
-	varValue quad_avg_estimated_power[MAX_NUM_QUAD];
-
-	varValue chip_avg_measured_power;
-	uint32_t power_budget_exceed_us;
-
-	varFreqRedMap frequency_reduction_map[MAX_NUM_CORE];
-
-	uint8_t core_perf_grade[MAX_NUM_CORE];
-
-    //TODO: add all the other values.
-} telemetry_t;
+typedef struct _task_param {
+	uint32_t error_map;
+	uint32_t task_id;
+	//#ifdef PCF_USE_CLUSTER
+	void *cl_ptr;
+	uint32_t num_cl_cores;
+	//#endif
+} task_param_t;
 
 
 /******************************/
 /***** Global Variables *******/
 /******************************/
-extern tasks_config_table_t g_TaskConfigTable;
-extern code_config_table_t g_CodeConfigTable;
+struct tasks_config_table g_TaskConfigTable;
+struct code_config_table g_CodeConfigTable;
 
 /* Utilities to control tasks */
 extern TaskHandle_t taskHandles[MAX_NUM_TASKS];
 //extern int16_t g_tasks_mul_factor[MAX_NUM_TASKS]; //signed because counters are signed
+
+typedef struct _task_shared_table {
+	struct ctrl_output 			op;
+} shared_task_t; 
+
+extern shared_task_t g_shared_task;
 
 
 #endif //lib #ifdef

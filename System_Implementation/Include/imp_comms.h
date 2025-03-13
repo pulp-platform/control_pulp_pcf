@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -20,16 +19,6 @@
 *
 **************************************************************************/
 
-
-/********************************************************/
-/*
-* File:
-* Notes:
-*
-* Written by: Eventine (UNIBO)
-*
-*********************************************************/
-
 #ifndef _PCF_IMP_COMMS_H_
 #define _PCF_IMP_COMMS_H_
 
@@ -47,10 +36,10 @@ varBool_e bImpSendDomainVoltages(varValue *i_computed_voltage);
 varBool_e bImpReadTempRequest(varValue *o_measured_temp);
 //varBool_e bImpReadCoreTemp(varValue *o_measured_temp);
 
-varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table);
+varBool_e bImpReadInputParameters(struct ctrl_commands* i_table_ptr);
 
-varBool_e bImpReadInstructionComposition(ctrl_inputs_table_t* i_input_table);
-varBool_e bImpReadPowerMeasure(ctrl_inputs_table_t* i_input_table);
+varBool_e bImpReadInstructionComposition(struct performance_measures * i_table_ptr);
+varBool_e bImpReadPowerMeasure(struct power_measures * i_table_ptr);
 
 //TODO: remove this probably.
 varBool_e bImpWriteFreqRedMap(telemetry_t* i_telemetry);

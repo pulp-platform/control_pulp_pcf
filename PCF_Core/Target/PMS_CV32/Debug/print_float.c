@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -20,7 +19,6 @@
 *
 **************************************************************************/
 
-
 #include "print_float.h"
 //#include "pmsis.h"
 #include <stdio.h>
@@ -30,6 +28,11 @@ float fAbs(float x){
     return ((x<0.0F) ? (-x) : (x));
 }
 
+void printFloatnl(float f)
+{
+  printFloat(f);
+  printf("\r\n");
+}
 void printFloat(float f)
 {
   int j = 100000000;

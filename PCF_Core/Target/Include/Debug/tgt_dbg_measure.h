@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,9 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-
 
 #ifndef _MEASURE_LIBRARY_
 #define _MEASURE_LIBRARY_

@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,16 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-/********************************************************/
-/*
-* File:
-* Notes:
-*
-* Written by: Eventine (UNIBO)
-*
-*********************************************************/
 
 #include "tgt_init.h"
 #include "tgt_cluster.h"
@@ -51,6 +40,20 @@
 //
 #include "pmsis_task.h"
 
+
+//TODO REMOVE:
+#include "ctrl_functions.h"
+
+
+/* Global Cluster Control Var */
+//L1_DATA ctrl_parameters_table_t c_parameters_table;
+//L1_DATA ctrl_inputs_table_t     c_inputs_table;
+//L1_DATA telemetry_t             c_telemetry_table;
+
+//L1_DATA sys_config_table_t 		c_SysConfigTable;
+//L1_DATA tasks_config_table_t 	c_TaskConfigTable;
+//L1_DATA code_config_table_t 	c_CodeConfigTable;
+//L1_DATA ctrl_config_table_t 	c_ControlConfigTable;
 
 
 //Global
@@ -130,4 +133,53 @@ varBool_e bTargetClusterSendTaskAsync(void (*cluster_entry)(void *), void *arg, 
     //__pi_task_destroy(&fc_task);
 
     return return_value;
+}
+
+varBool_e bTargetClusterFork(void (*func)(void *), void *arg, int parall_num)
+{
+    varBool_e return_value = PCF_TRUE;
+
+	//pi_cl_team_fork(pi_cl_cluster_nb_cores(), func, arg);
+	//pi_cl_team_fork(parall_num, func, arg);
+	pi_cl_team_fork(0, func, arg);
+
+	return return_value; 
+}
+
+//TODO
+inline void vTargetClusterTeamBarrier(void) {pi_cl_team_barrier();}
+
+void vDummyFork(void *args)
+{
+	struct function_param* param = (struct function_param*) args;
+
+	varFor i = (varFor)pi_cl_team_nb_cores();
+	varFor s = (varFor)pi_core_id();
+
+	varFor it_chunk = param->total_iterations / i;
+	if ( (param->total_iterations % i) != 0)
+		it_chunk += 1;
+
+	varFor e = s + i * it_chunk; //- l_num_cluster_cores;
+
+	// Handle odd core number
+	if (e > param->total_iterations)
+		e = param->total_iterations;	
+
+	//hal_eu_mutex_lock(0);
+	//printf("Entering cluster core: %d / %d with e: %d\n\r", s, i, e);
+	//hal_eu_mutex_unlock(0);
+
+	if (param->return_value == NULL)
+	{
+		param->f(s, e, i, param->igl, param->ptr_args);
+
+		vTargetClusterTeamBarrier();
+	}
+	else
+	{
+		param->return_value[s] = param->f(s, e, i, param->igl, param->ptr_args);
+
+		vTargetClusterTeamBarrier();
+	}
 }

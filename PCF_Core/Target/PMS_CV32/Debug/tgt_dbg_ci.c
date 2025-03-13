@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,9 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-
 
 #include "tgt_dbg_ci.h"
 
@@ -103,6 +99,8 @@ void vDebugTimerInterruptTest( void )
 void vDebugCiInit( void )
 {
 	vMeasureInit(mCycles);
+
+	//TODO: tap_period_us CHANGED!!!!!!!!!!!!!!!!!!!!
 
 	g_mes_comp_value_timer = (uint32_t)((float)g_TaskConfigTable.tap_period_us *
 		((float)DEFAULT_SYSTEM_CLOCK / (float)1000000.0));

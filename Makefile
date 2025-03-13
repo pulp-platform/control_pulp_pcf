@@ -1,4 +1,3 @@
-
 ##########################################################################
 #
 # Copyright 2023 ETH Zurich and University of Bologna
@@ -20,13 +19,12 @@
 #
 ##########################################################################
 
-
-
 # Common code
 #------------------------------------
 
 # ARE WE IN DEVELOPMENT ?
 ACTIVE_DEVELOP = 1
+SCMI = 0
 ###
 
 APP = test
@@ -43,10 +41,6 @@ APP_CFLAGS  +=
 INC_PATH	+= ./PCF_Core ./PCF_Core/Config ./PCF_Core/Control ./PCF_Core/Secure
 INC_PATH	+= ./PCF_Core/Target/Include ./PCF_Core/Target/Include/Debug
 INC_PATH 	+= ./System_Implementation/Include/
-
-######################################################
-#TODO REMOVE
-INC_PATH 	+= ./PCF_Core/Target/PMS_CV32
 
 #INC_PATH	+= ./freertosFromISR
 
@@ -65,6 +59,24 @@ ifeq ($(PCFP),NO_IO)
 APP_SRCS 	+= ./System_Implementation/$(PCFP)/imp_dataLib.c
 endif
 
+#2
+ifeq ($(PCFP),EPI_RHEA1)
+TMB_PATH	= ./System_Implementation/$(PCFP)/TMB_library
+INC_PATH	+= $(TMB_PATH)/include
+INC_PATH	+= $(TMB_PATH)/sub_systems
+INC_PATH	+= $(TMB_PATH)
+
+APP_SRCS 	+= $(TMB_PATH)/src/tmb.c $(TMB_PATH)/src/clock.c $(TMB_PATH)/src/reset.c $(TMB_PATH)/src/power.c $(TMB_PATH)/src/genio.c
+APP_SRCS 	+= $(TMB_PATH)/src/gpu.c $(TMB_PATH)/src/regbank_sw.c $(TMB_PATH)/src/pqchannel.c $(TMB_PATH)/src/irq.c
+#APP_SRCS 	+= $(TMB_PATH)/sub_systems/imp_tmb_pcie.c $(TMB_PATH)/sub_systems/imp_tmb_ddr54.c
+
+INC_PATH 	+= ./System_Implementation/$(PCFP)/AVSBus_library
+APP_SRCS 	+= ./System_Implementation/$(PCFP)/AVSBus_library/avs.c
+
+# TMB_LIBRARIES
+CPPFLAGS += -DBUILD_FOR_HOST
+endif
+
 ##Target
 PCFT = $(PCF_TARGET)
 ifeq ($(PCFT),)
@@ -75,6 +87,7 @@ APP_SRCS 	+= ./PCF_Core/Target/$(PCFT)/tgt_init.c
 APP_SRCS 	+= ./PCF_Core/Target/$(PCFT)/tgt_port.c
 APP_SRCS 	+= ./PCF_Core/Target/$(PCFT)/tgt_timer.c
 APP_SRCS	+= ./PCF_Core/Target/$(PCFT)/tgt_cluster.c
+INC_PATH	+= ./PCF_Core/Target/$(PCFT)/
 ifeq ($(ACTIVE_DEVELOP),1)
 APP_SRCS 	+= ./PCF_Core/Target/$(PCFT)/Debug/tgt_dbg_measure.c
 APP_SRCS 	+= ./PCF_Core/Target/$(PCFT)/Debug/tgt_debug.c
@@ -111,12 +124,12 @@ CPPFLAGS += -DDEFAULT_SYSTEM_CLOCK=500000000u
 
 # ARE WE IN DEVELOPMENT ?
 CPPFLAGS += -DDEBUG_ACTIVE -DPIDV2 -UTEST_GSL_LIBRARY -DUSE_NEWTON_RAPSON -UGSL_PARALLEL -DUSE_BISECT 
-CPPFLAGS += -UUSE_CTRL_STRCT_INVERSE -UUSE_CTRL_STRCT_VB -UOPTIMIZATION_FUNC
+CPPFLAGS += -UUSE_CTRL_STRCT_INVERSE -UUSE_CTRL_STRCT_VB -UOPTIMIZATION_FUNC -DUSE_CTRL_FUZZY
 #####
 
 #Uncomment this to print information via printf
 CPPFLAGS += -DPRINTF_ACTIVE
-CPPFLAGS += -DDEBUG_PRINTF
+CPPFLAGS += -UDEBUG_PRINTF
 CPPFLAGS += -DHRO_PRINTF
 CPPFLAGS += -DALPHA_DEBUG
 
@@ -150,6 +163,17 @@ CPPFLAGS += -DMEASURE_N_OUTPUTS=64
 #TODO: sadly the MEASURE_CSR value is target dependant. Still I don't know how to do otherwise
 CPPFLAGS += -DMEASURE_CSR=0 -DMEASURE_ZEROING=0
 
+### SCMI
+ifeq ($(SCMI),1)
+CPPFLAGS += -DSCMI_ACTIVE=1
+APP_SRCS 	+= ./PCF_Core/scmi_handler.c
+CPPFLAGS += -I../sw/tests/control-pulp-tests/shared/include
+
+CPPFLAGS += -DSCMI_IMPROV=1
+else
+CPPFLAGS += -USCMI_ACTIVE
+endif
+
 #####################
 #Last One
 #Make flags:
@@ -172,7 +196,7 @@ CPPFLAGS += -DUSE_STDIO
 
 #todo remove
 #to fix compiler
-RISCV = /usr/pack/riscv-1.0-kgf/pulp-gcc-2.5.0-rc1
+RISCV =$(PCF_RISCV_TC_PATH)
 CFLAGS = -Os -g3 -march=rv32imc_zfinx_xcorev -mabi=ilp32 -mno-pulp-hwloop
 ASFLAGS = -Os -g3 -march=rv32imc_zfinx_xcorev -mabi=ilp32 -mno-pulp-hwloop
 

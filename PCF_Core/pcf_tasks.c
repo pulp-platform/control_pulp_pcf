@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,10 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-
-
 
 //TODO: all these inclusions below, to see which are needed I just copy pasted.
 /* FreeRTOS Inclusions. */
@@ -56,12 +51,17 @@
 /* Others */
 //TODO:remove
 #include <stdio.h>
+#include "print_float.h"
+
+#ifdef SCMI_ACTIVE
+#include "scmi_handler.h"
+#endif
 
 
 void vCommsTask(void *parameters ) {
 
 	/* Description */
-	/* This task is responsable of dialoguing with the BMC task of the core of the other socket (same MB)
+	/* This task is responsable of dialoguing with the BMC task of the EPI core of the other socket (same MB)
 	* This task will be activated by a notification sent by TControl that will check the necessity of trasmission
 	* through a polling (500 ms of period)
 	*/
@@ -69,7 +69,7 @@ void vCommsTask(void *parameters ) {
 	//if (g_CodeConfigTable.use_error_map == PCF_TRUE)
 	uint32_t l_error_map = BM_RESET;
 	varError* adr_g_error_map = parameters;
-	ctrl_inputs_table_t l_ctrl_input_table;
+	//ctrl_inputs_table_t l_ctrl_input_table;
 
 	//TBC: these variables
 	const uint32_t id = 7321;
@@ -81,12 +81,12 @@ void vCommsTask(void *parameters ) {
 	#endif
 
 	//Get initial Values
-	if (bReadGlobalVariable(&l_ctrl_input_table, G_CTRL_INPUT_TABLE, sizeof(l_ctrl_input_table), id) != PCF_TRUE)
-	{
-		l_error_map |= BM_ERROR_SHARED_VAR_READ;
+	//if (bReadGlobalVariable(&l_ctrl_input_table, G_CTRL_INPUT_TABLE, sizeof(l_ctrl_input_table), id) != PCF_TRUE)
+	//{
+	//	l_error_map |= BM_ERROR_SHARED_VAR_READ;
 
 		//Do Something.. //TODO
-	}
+	//}
 
 	/* Task Code */
 	for (;;)
@@ -110,8 +110,9 @@ void vCommsTask(void *parameters ) {
 
 			//Do Something.. //TODO
 		}
+		*/
 
-		if (bImpReadInputParameters(&l_ctrl_input_table) != PCF_TRUE) //TODO: remove telemetry
+		if (bImpReadInputParameters(&g_input_ctrl.cmd) != PCF_TRUE) //TODO: remove telemetry
 		{
 			l_error_map |= BM_ERROR_SHARED_VAR_READ;
 
@@ -119,7 +120,7 @@ void vCommsTask(void *parameters ) {
 			//Do Something.. //TODO
 		}
 
-		if (bImpReadInstructionComposition(&l_ctrl_input_table) != PCF_TRUE) //TODO: remove telemetry
+		if (bImpReadInstructionComposition(&g_input_ctrl.msr.perf) != PCF_TRUE) //TODO: remove telemetry
 		{
 			l_error_map |= BM_ERROR_SHARED_VAR_READ;
 
@@ -127,6 +128,43 @@ void vCommsTask(void *parameters ) {
 
 			//Do Something.. //TODO
 		}
+
+		#ifdef SCMI_ACTIVE
+		// SCMI
+		varFor l_num_core = g_config_sys.num_cores;
+		//varFor SCMI_CORE = 2;
+		varValue freq = 0.8f;
+		if (scmi_target_frequency == 1) {
+			freq = 0.8f;
+		}else if (scmi_target_frequency == 2) {
+			freq = 2.41f;		
+		}else if (scmi_target_frequency == 3) {
+			freq = 3.4f;
+		}
+		//for (varFor i=0;i<l_num_core;i++)
+		//	g_input_ctrl.cmd.target_freq[i] = freq;	
+		g_input_ctrl.cmd.target_freq[SCMI_CORE] = freq;
+
+		/*
+		printf("freq [%d]: ", SCMI_CORE);
+		printFloat(freq);
+		printf("\n\r");
+		*/
+		#endif
+
+		/*
+		printf("freq1-2: ");
+		printFloat(g_input_ctrl.cmd.target_freq[1]);
+		printf(" - ");
+		printFloat(freq);
+		printf("\n\r");
+		*/
+
+		//printf("comm: tf [%d]: ", g_input_ctrl.cmd.target_freq_changed[0]);
+		//printFloat(g_input_ctrl.cmd.target_freq[0]);
+		//printf(" - temp: ");
+		//printFloat(g_input_ctrl.msr.temp.core[0]);
+		//printf("\n\r");
 
 		/*** Write Calibration Table ***/
 		/*

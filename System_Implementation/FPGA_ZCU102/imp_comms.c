@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,9 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-
 
 /* FreeRTOS Inclusions. */
 
@@ -46,6 +42,7 @@
 #include <stdint.h>
 #ifdef PRINTF_ACTIVE
 #include <stdio.h>
+#include "print_float.h"
 #endif
 
 //Uncomment to enable Fixed addresses data fetch
@@ -53,8 +50,8 @@
 
 uint32_t l_error_map = BM_RESET;
 
-int intdata_2b_stored[MAX_NUM_CORE] = {0};
-float floatdata_2b_stored[MAX_NUM_CORE] = {0};
+int intdata_2b_stored[PCF_CORES_MAX] = {0};
+float floatdata_2b_stored[PCF_CORES_MAX] = {0};
 
 varBool_e bImpCommsInit(void)
 {
@@ -79,7 +76,7 @@ varBool_e bImpSendCoreFreq(varValue *i_computed_freq)
 	//KEEP IT SHORT and no STRANGE CALLS.
 
     varBool_e return_value = PCF_TRUE;
-    varFor l_num_core = g_SysConfigTable.num_core;
+    varFor l_num_cores = g_config_sys.num_cores;
 
     #ifndef MEMORY_FIXED_FETCH
     //static uint32_t l_iteration_times = 0;
@@ -97,9 +94,9 @@ varBool_e bImpSendCoreFreq(varValue *i_computed_freq)
     address_num_of_bytes = 1;
 
     //#ifndef MEMORY_FIXED_FETCH
-    //mem_address += l_iteration_times * l_num_core * address_num_of_bytes;
+    //mem_address += l_iteration_times * l_num_cores * address_num_of_bytes;
 
-    for (varFor i = 0; i < l_num_core; i++)
+    for (varFor i = 0; i < l_num_cores; i++)
     {
         *mem_address = i_computed_freq[i];
 
@@ -109,7 +106,7 @@ varBool_e bImpSendCoreFreq(varValue *i_computed_freq)
         {
             return_value = PCF_FALSE;
             mem_address = (varValue*)IMP_ADR_OUT_FIRST_CORE_FREQ;
-            if (i < (l_num_core -1))
+            if (i < (l_num_cores -1))
                 i = -1;
         }
     }
@@ -129,7 +126,7 @@ varBool_e bImpSendDomainVoltages(varValue *i_computed_voltage)
     //KEEP IT SHORT and no STRANGE CALLS.
 
     varBool_e return_value = PCF_TRUE;
-    varFor l_num_domains = g_SysConfigTable.num_pw_domains;
+    varFor l_num_domains = g_config_sys.num_domains;
 
     #ifndef MEMORY_FIXED_FETCH
     //static uint32_t l_iteration_times = 0;
@@ -176,7 +173,7 @@ varBool_e bImpSendDomainVoltages(varValue *i_computed_voltage)
 varBool_e bImpReadTempRequest(varValue *o_measured_temp)
 {
     varBool_e return_value = PCF_TRUE;
-    varFor l_num_core = g_SysConfigTable.num_core;
+    varFor l_num_cores = g_config_sys.num_cores;
 
     #ifndef MEMORY_FIXED_FETCH
     //static uint32_t l_iteration_times = 0;
@@ -194,9 +191,9 @@ varBool_e bImpReadTempRequest(varValue *o_measured_temp)
     address_num_of_bytes = 1;
 
     //#ifndef MEMORY_FIXED_FETCH
-    //mem_address += l_iteration_times * l_num_core * address_num_of_bytes;
+    //mem_address += l_iteration_times * l_num_cores * address_num_of_bytes;
 
-    for (varFor i = 0; i < l_num_core; i++)
+    for (varFor i = 0; i < l_num_cores; i++)
     {
         varValue data = *mem_address;
         if (data == 0xCAFECAFE)
@@ -214,7 +211,7 @@ varBool_e bImpReadTempRequest(varValue *o_measured_temp)
         {
             return_value = PCF_FALSE;
             mem_address = (varValue*)IMP_ADR_IN_FIRST_CORE_TEMP;
-            if (i < (l_num_core -1))
+            if (i < (l_num_cores -1))
                 i = -1;
         }
     }
@@ -231,11 +228,11 @@ varBool_e bImpReadTempRequest(varValue *o_measured_temp)
 varBool_e bImpReadCoreTemp(varValue *o_measured_temp)
 {
     varBool_e return_value = PCF_TRUE;
-    varFor l_num_core = g_SysConfigTable.num_core;
+    varFor l_num_cores = g_config_sys.num_cores;
 
 	varValue* mem_address = TILE_ADR_FIRST_CORE_TEMP_2;
 
-	for (varFor i = 0; i < l_num_core; i++)
+	for (varFor i = 0; i < l_num_cores; i++)
     {
         o_measured_temp[i] = *mem_address;
 
@@ -246,14 +243,14 @@ varBool_e bImpReadCoreTemp(varValue *o_measured_temp)
     return return_value;
 }*/
 
-varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
+varBool_e bImpReadInputParameters(struct ctrl_commands* i_table_ptr)
 {
     varBool_e return_value = PCF_TRUE;
-    varFor l_num_core = g_SysConfigTable.num_core;
+    varFor l_num_cores = g_config_sys.num_cores;
 
     #ifndef MEMORY_FIXED_FETCH
     //static uint32_t l_iteration_times = 0;
-    static varValue* l_prev_iteration_address_ft[MAX_NUM_CORE] = {NULL};
+    static varValue* l_prev_iteration_address_ft[PCF_CORES_MAX] = {NULL};
     static varValue* l_prev_iteration_address_pwb = (varValue*)IMP_ADR_CMD_POWER_BUDGET;
     static uint32_t* l_prev_iteration_address_bind = (uint32_t*)IMP_ADR_CMD_FIRST_CORE_BINDINGS;
 
@@ -261,7 +258,7 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
 
     if (init)
     {
-        for (varFor i = 0; i < l_num_core; i++)
+        for (varFor i = 0; i < l_num_cores; i++)
             l_prev_iteration_address_ft[i] = (varValue*)(IMP_ADR_CMD_FIRST_CORE_FREQ_T + 4*2*i/* * address_num_of_bytes */);
 
         init = 0;
@@ -282,7 +279,7 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
     //mem_address_ft = l_prev_iteration_address_ft[0];
     mem_address_pwb = l_prev_iteration_address_pwb;
     mem_address_bind = l_prev_iteration_address_bind;
-    static int l_counter_times_ft[MAX_NUM_CORE] = {0};
+    static int l_counter_times_ft[PCF_CORES_MAX] = {0};
     static int l_counter_times_pwb = 0;
     static int l_counter_times_bind = 0;
     varValue* mem_address_times = NULL;
@@ -295,10 +292,10 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
     address_num_of_bytes = 1;
 
     //#ifndef MEMORY_FIXED_FETCH
-    //mem_address += l_iteration_times * l_num_core * address_num_of_bytes;
+    //mem_address += l_iteration_times * l_num_cores * address_num_of_bytes;
 
     /* Target Frequency */
-    for (varFor i = 0; i < l_num_core; i++)
+    for (varFor i = 0; i < l_num_cores; i++)
     {
         #ifndef MEMORY_FIXED_FETCH
         mem_address_ft = l_prev_iteration_address_ft[i];
@@ -310,7 +307,7 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
         {
             l_counter_times_ft[i] = 0;
             if (times != -1)
-                mem_address_ft += 2*l_num_core*address_num_of_bytes;
+                mem_address_ft += 2*l_num_cores*address_num_of_bytes;
         }
         else
         {
@@ -319,6 +316,7 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
         #endif
 
         varValue data = *mem_address_ft;
+        //if (i==0){printf("imp TF: ");printFloat(data);printf("\n\r");}
         if (data == 0xCAFECAFE)
         {
             return_value = PCF_FALSE;
@@ -327,16 +325,18 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
             i=0;
         }
 
-        if (data != i_input_table->target_freq[i])
+        if (data != i_table_ptr->target_freq[i])
         {
-            i_input_table->target_freq_changed[i] = PCF_TRUE;
-            i_input_table->target_freq[i] = data;
+            i_table_ptr->target_freq_changed[i] = PCF_TRUE;
+            i_table_ptr->target_freq[i] = data;
         }
         else
         {
-            i_input_table->target_freq_changed[i] = PCF_FALSE;
+            i_table_ptr->target_freq_changed[i] = PCF_FALSE;
         }
         
+        i_table_ptr->target_freq[i] = data;
+
         #ifdef MEMORY_FIXED_FETCH
         mem_address_ft += address_num_of_bytes;
         //mem_address_ft += address_num_of_bytes;
@@ -346,7 +346,7 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
         {
             return_value = PCF_FALSE;
             mem_address_ft = (varValue*)IMP_ADR_CMD_FIRST_CORE_FREQ_T;
-            if (i < (l_num_core -1))
+            if (i < (l_num_cores -1))
                 i = -1;
         }
 
@@ -384,7 +384,7 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
         datap = *mem_address_pwb;
     }
 
-    i_input_table->total_power_budget = datap;
+    i_table_ptr->total_power_budget = datap;
 
     if (mem_address_pwb > (varValue*)IMP_ADR_CMD_POWER_BUDGET_LAST)
     {
@@ -402,7 +402,7 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
         l_counter_times_bind = 0;
         if (times != -1)
         {
-            l_prev_iteration_address_bind += 2*l_num_core*address_num_of_bytes;
+            l_prev_iteration_address_bind += 2*l_num_cores*address_num_of_bytes;
             mem_address_bind = l_prev_iteration_address_bind;
         }
     }
@@ -412,7 +412,7 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
     }
     #endif
 
-    for (varFor i = 0; i < l_num_core; i++)
+    for (varFor i = 0; i < l_num_cores; i++)
     {
         uint32_t data = *mem_address_bind;
         if (data == 0xCAFECAFE)
@@ -423,7 +423,7 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
             i=0;
         }
 
-        i_input_table->core_binding_vector[i] = (varCoreBinding)data;
+        i_table_ptr->core_binding_vector[i] = (varCoreBinding)data;
         mem_address_bind += address_num_of_bytes;
         //mem_address_bind += address_num_of_bytes;
 
@@ -431,7 +431,7 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
         {
             return_value = PCF_FALSE;
             mem_address_bind = (uint32_t*)IMP_ADR_CMD_FIRST_CORE_BINDINGS;
-            if (i < (l_num_core -1))
+            if (i < (l_num_cores -1))
                 i = -1;
         }
 
@@ -442,11 +442,11 @@ varBool_e bImpReadInputParameters(ctrl_inputs_table_t* i_input_table)
     return return_value;
 }
 
-varBool_e bImpReadInstructionComposition(ctrl_inputs_table_t* i_input_table)
+varBool_e bImpReadInstructionComposition(struct performance_measures* i_table_ptr)
 {
     varBool_e return_value = PCF_TRUE;
-    varFor l_num_core = g_SysConfigTable.num_core;
-    varFor l_num_state = g_SysConfigTable.core_wl_states_num;
+    varFor l_num_cores = g_config_sys.num_cores;
+    varFor l_num_states = g_config_sys.num_wl_states;
 
     uint32_t* mem_adr = NULL;
 
@@ -475,12 +475,12 @@ varBool_e bImpReadInstructionComposition(ctrl_inputs_table_t* i_input_table)
     address_num_of_bytes = 1;
 
     //#ifndef MEMORY_FIXED_FETCH
-    //mem_address += l_iteration_times * l_num_core * address_num_of_bytes;
+    //mem_address += l_iteration_times * l_num_cores * address_num_of_bytes;
 
-    for (varFor i = 0; i < l_num_core; i++)
+    for (varFor i = 0; i < l_num_cores; i++)
     {
         #ifdef USE_INSTRUCTIONS_COMPOSITION
-        for (varFor state = 0; state < l_num_state; state++)
+        for (varFor state = 0; state < l_num_states; state++)
         {
             uint32_t data = *mem_address;
             if (data == 0xCAFECAFE)
@@ -492,8 +492,8 @@ varBool_e bImpReadInstructionComposition(ctrl_inputs_table_t* i_input_table)
                 state=0;
             }
 
-            i_input_table->perc_workload[i][state] = (uint8_t)data;
-            //printf("test workload: %d\n\r", (int)i_input_table->perc_workload[i][state]);
+            i_table_ptr->perc[i][state] = (uint8_t)data;
+            //printf("test workload: %d\n\r", (int)i_table_ptr->perc[i][state]);
 
             mem_address += address_num_of_bytes;
 
@@ -501,7 +501,7 @@ varBool_e bImpReadInstructionComposition(ctrl_inputs_table_t* i_input_table)
             {
                 return_value = PCF_FALSE;
                 mem_address = (uint32_t*)IMP_ADR_IN_FIRST_CORE_INSTR;
-                if (i < (l_num_core -1))
+                if (i < (l_num_cores -1))
                 {
                     i = -1;
                     state = -1;
@@ -518,9 +518,9 @@ varBool_e bImpReadInstructionComposition(ctrl_inputs_table_t* i_input_table)
             i=0;
         }
 
-        i_input_table->core_ceff[i] = data;
+        i_table_ptr->ceff[i] = data;
 
-        mem_address += address_num_of_bytes*l_num_state;
+        mem_address += address_num_of_bytes*l_num_states;
         //TODO: test:
         //printf ("mem_add = %x\n\r", mem_address);
 
@@ -528,7 +528,7 @@ varBool_e bImpReadInstructionComposition(ctrl_inputs_table_t* i_input_table)
         {
             return_value = PCF_FALSE;
             mem_address = (varValue*)IMP_ADR_IN_FIRST_CORE_INSTR;
-            if (i < (l_num_core -1))
+            if (i < (l_num_cores -1))
                 i = -1;
         }
         #endif
@@ -547,10 +547,10 @@ varBool_e bImpReadInstructionComposition(ctrl_inputs_table_t* i_input_table)
     return return_value;
 }
 
-varBool_e bImpReadPowerMeasure(ctrl_inputs_table_t* i_input_table)
+varBool_e bImpReadPowerMeasure(struct power_measures* i_table_ptr)
 {
     varBool_e return_value = PCF_TRUE;
-    varFor l_num_core = g_SysConfigTable.num_core;
+    varFor l_num_cores = g_config_sys.num_cores;
 
     #ifndef MEMORY_FIXED_FETCH
     //static uint32_t l_iteration_times = 0;
@@ -568,7 +568,7 @@ varBool_e bImpReadPowerMeasure(ctrl_inputs_table_t* i_input_table)
     address_num_of_bytes = 1;
 
     //#ifndef MEMORY_FIXED_FETCH
-    //mem_address += l_iteration_times * l_num_core * address_num_of_bytes;
+    //mem_address += l_iteration_times * l_num_cores * address_num_of_bytes;
 
     varValue data = *mem_address;
     if (data == 0xCAFECAFE)
@@ -577,7 +577,7 @@ varBool_e bImpReadPowerMeasure(ctrl_inputs_table_t* i_input_table)
         mem_address= (varValue*)IMP_ADR_IN_POWER_CPU;
         data = *mem_address;
     }
-    i_input_table->measured_power[0] = data;
+    i_table_ptr->total = data;
 
     mem_address += address_num_of_bytes;
 
@@ -600,7 +600,7 @@ varBool_e bImpReadPowerMeasure(ctrl_inputs_table_t* i_input_table)
 varBool_e bImpWriteFreqRedMap(telemetry_t* i_telemetry)
 {
     varBool_e return_value = PCF_TRUE;
-    varFor l_num_core = g_SysConfigTable.num_core;
+    varFor l_num_cores = g_config_sys.num_cores;
 
     #ifndef MEMORY_FIXED_FETCH
     //static uint32_t l_iteration_times = 0;
@@ -618,9 +618,9 @@ varBool_e bImpWriteFreqRedMap(telemetry_t* i_telemetry)
     address_num_of_bytes = 1;
 
     //#ifndef MEMORY_FIXED_FETCH
-    //mem_address += l_iteration_times * l_num_core * address_num_of_bytes;
+    //mem_address += l_iteration_times * l_num_cores * address_num_of_bytes;
 
-    for (varFor i = 0; i < l_num_core; i++)
+    for (varFor i = 0; i < l_num_cores; i++)
     {
         *mem_address = (uint32_t)i_telemetry->frequency_reduction_map[i];
         i_telemetry->frequency_reduction_map[i] = BM_RESET;
@@ -628,8 +628,8 @@ varBool_e bImpWriteFreqRedMap(telemetry_t* i_telemetry)
         mem_address += address_num_of_bytes;
 
         //added //TODO REMOVE
-        float* mem_floatt=mem_address; //+ address_num_of_bytes*l_num_core;
-        *mem_floatt = (float)i_telemetry->core_avg_estimated_power[i];
+        float* mem_floatt=mem_address; //+ address_num_of_bytes*l_num_cores;
+        *mem_floatt = (float)i_telemetry->avg_core[i].est_pw;
         mem_address += address_num_of_bytes;
         //endadded
 
@@ -637,7 +637,7 @@ varBool_e bImpWriteFreqRedMap(telemetry_t* i_telemetry)
         {
             return_value = PCF_FALSE;
             mem_address = (uint32_t*)IMP_ADR_OUT_FIRST_FREQREDMAP;
-            if (i < (l_num_core -1))
+            if (i < (l_num_cores -1))
                 i = -1;
         }
     }

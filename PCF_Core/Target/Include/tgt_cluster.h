@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,16 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-/********************************************************/
-/*
-* File:
-* Notes:
-*
-* Written by: Eventine (UNIBO)
-*
-*********************************************************/
 
 #ifndef _PCF_TGT_CLUSTER_H_
 #define _PCF_TGT_CLUSTER_H_
@@ -58,6 +47,20 @@ void vTargetClusterPrintExit(char* str);
 
 varBool_e bTargetClusterSendTaskBlocking(void (*cluster_entry)(void *), void *arg);
 varBool_e bTargetClusterSendTaskAsync(void (*cluster_entry)(void *), void *arg, void (*callback)(void *));
+void vTargetClusterTeamBarrier(void);
+varBool_e bTargetClusterFork(void (*func)(void *), void *arg, int parall_num);
+
+void vDummyFork(void *args);
+
+/* Global Cluster Control Var */
+//ctrl_config_table_t         *c_parameters_table;
+//ctrl_values_table_t         *c_inputs_table;
+//telemetry_t                 *c_telemetry_table;
+
+//config_sys_t 		    *c_SysConfigTable;
+//struct tasks_config_table 	*c_TaskConfigTable;
+//struct code_config_table    *c_CodeConfigTable;
+//ctrl_config_table_t 	    *c_ControlConfigTable;
 
 
 #endif //lib #ifdef

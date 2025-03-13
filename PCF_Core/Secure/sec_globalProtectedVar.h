@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -20,18 +19,6 @@
 *
 **************************************************************************/
 
-
-/********************************************************/
-/*
-* File: cfg_firmware.h
-* Notes: This files holds the definitions, structs and
-*           global var regarding the firmware structure and
-*           code.
-*
-* Written by: Eventine (UNIBO)
-*
-*********************************************************/
-
 #ifndef _PCF_GLOBAL_PROTECTED_VAR_H_
 #define _PCF_GLOBAL_PROTECTED_VAR_H_
 
@@ -46,24 +33,21 @@
 #include "cfg_control.h"
 
 
-extern sys_config_table_t 		default_SysConfigTable;
-extern tasks_config_table_t 	default_TaskConfigTable;
-extern code_config_table_t 	    default_CodeConfigTable;
-extern ctrl_lms_config_table_t  default_LmsConfigTable;
+extern config_sys_t 		default_SysConfigTable;
+struct tasks_config_table 	    default_TaskConfigTable;
+struct code_config_table 	    default_CodeConfigTable;
 extern ctrl_config_table_t 	    default_ControlConfigTable;
 
 
 //these has to stay here
-extern ctrl_inputs_table_t  g_TasksCtrlInput;
-extern ctrl_parameters_table_t g_TasksCtrlParameter;
+extern ctrl_values_table_t      g_TasksCtrlInput;
+extern ctrl_values_table_t      g_TasksCtrlParameter;
 extern telemetry_t              g_ChipTelemetry;
 
 /* One Mutex for each Shared Global Variable*/
-extern SemaphoreHandle_t g_Sem_ChipTelemetry;
-extern SemaphoreHandle_t g_Sem_CtrlParameterTable;
-extern SemaphoreHandle_t g_Sem_CtrlInputTable;
-//extern SemaphoreHandle_t g_SemReductionMap;
-//extern SemaphoreHandle_t g_SemErrorMap;
+extern SemaphoreHandle_t        g_Sem_ChipTelemetry;
+extern SemaphoreHandle_t        g_Sem_CtrlParameterTable;
+extern SemaphoreHandle_t        g_Sem_CtrlInputTable;
 
 extern uint32_t g_error_map[MAX_NUM_TASKS];
 

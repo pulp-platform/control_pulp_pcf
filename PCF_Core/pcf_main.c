@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,17 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-/********************************************************/
-/*
-* File:
-* Date:
-* Notes:
-*
-* Written by: Eventine (UNIBO)
-*/
-/********************************************************/
 
 /* FreeRTOS Inclusions. */
 #include <FreeRTOS.h>
@@ -92,6 +80,8 @@ TaskHandle_t taskHandles[MAX_NUM_TASKS] = {NULL};
 //counters need to be signed!
 varShortCounter task_period_counter_ISR[NUM_PERIODIC_TASKS] = {0}; //TBD
 
+int lowered_freq = 0;
+float fast_freq[4] = {0.8, 0.8, 0.8, 0.8};
 
 /* Periodicity Generator */ //TBD: Move Interrupt Handler to secureSomething or leave it here?
 void TIMER1_IRQ_handler()
@@ -141,9 +131,6 @@ int main( void )
 	/*** Initialization  ***/
 	// --------------------------------------------------------------- //
 
-	//Local Variables
-	uint32_t l_tap_period_us = g_TaskConfigTable.tap_period_us;
-
 	/** Hardware Init **/
 	if (bTargetInitVoltage() != PCF_TRUE)
 	{
@@ -165,7 +152,7 @@ int main( void )
 
 	/* To Print the System Clock */
 	#if (defined(PRINTF_ACTIVE) && defined(HRO_PRINTF))
-	printf("Number of Cores: %d,\n\rSystem Clock: %u Hz\n\r", g_SysConfigTable.num_core, DEFAULT_SYSTEM_CLOCK); //TODO: put here SystemCoreClock, instead of my definition
+	printf("Number of Cores: %d,\n\rSystem Clock: %u Hz\n\r", g_config_sys.num_cores, DEFAULT_SYSTEM_CLOCK); //TODO: put here SystemCoreClock, instead of my definition
 	#endif
 
 	/* Hardware Init pt.2 - Comms*/
@@ -191,11 +178,10 @@ int main( void )
 
 	/* Save the internal Original Var */
 	//TODO: how to be certain that they are const/not changed.
-	default_SysConfigTable 		= g_SysConfigTable;
-	default_TaskConfigTable		= g_TaskConfigTable;
-	default_CodeConfigTable		= g_CodeConfigTable;
-	default_LmsConfigTable		= g_LmsConfigTable;
-	default_ControlConfigTable	= g_ControlConfigTable;
+	//default_SysConfigTable 		= g_config_sys;
+	//default_TaskConfigTable		= g_TaskConfigTable;
+	//default_CodeConfigTable		= g_CodeConfigTable;
+	//default_ControlConfigTable	= g_ControlConfigTable;
 
 	//init global ISR counters
 	for (varFor task = 0; task < NUM_PERIODIC_TASKS; task++)
@@ -247,7 +233,6 @@ int main( void )
 	#if (defined(PRINTF_ACTIVE) && defined(HRO_PRINTF))
 	printf("\n\r\n\r\t *** Starting FreeRTOS Firmware Test *** \n\r\n\r");
 	#endif
-
 
 	/* Start the Scheduler */
 	vTaskStartScheduler();

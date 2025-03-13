@@ -19,22 +19,48 @@
 *
 **************************************************************************/
 
-#ifndef _PCF_TGT_INIT_H_
-#define _PCF_TGT_INIT_H_
+#ifndef _PCF_SCMI_HANDLER_H_
+#define _PCF_SCMI_HANDLER_H_
+#ifdef SCMI_ACTIVE
 
-/* Libraries Inclusion */
-#include "cfg_types.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <inttypes.h>
 
+/* system includes */
+#include "system.h"
+#include "io.h"
+#include "irq.h"
+#include "csr.h"
+#include "clic.h"
+#include "scmi.h"
 
-varBool_e bTargetSetVoltage(int iVoltage);
-varBool_e bTargetSetFrequency(int iFrequency);
+/* pmsis */
+//#include "target.h"
+//#include "os.h"
 
-//return the total amount of memory setted
-int lTargetInitializeMemory(void);
+//TODO:
+#define MBOX_START_ADDRESS 0xFFFF0000
+#define INTR_ID 32
+#define CLIC_BASE_ADDR 0x1A200000
+#define CLIC_END_ADDR  0x1A20FFFF
+#define SUCCESS  0x0
+#define FC_TIMER_BASE_ADDR  0x1B200400
+#define ARCHI_TIMER_SIZE  0x00000800
+#define FC_TIMER_ADDR (0x1A100000  0x0000B000)
+#define DRAM_BASE_ADDR 0x20000000
 
-varBool_e bTargetInitVoltage(void);
-varBool_e bTargetInitFrequency(void);
-varBool_e bTargetInitHw(void);
+uint32_t scmi_target_frequency;
+//TODO:
+uint32_t scmi_target_changed;
+#define SCMI_CORE 2
 
+void scmi_init(void);
+void enable_scmi_interrupt(void);
+void callee_scmi_handler(void);
 
+int lowered_freq;
+float fast_freq[4];
+
+#endif //SCMI_ACTIVE
 #endif //lib #ifdef

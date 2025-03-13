@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,17 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-/********************************************************/
-/*
-* File: cfg_types.h
-* Notes: This file holds the general data type, struct and
-*           enum.
-*
-* Written by: Eventine (UNIBO)
-*
-*********************************************************/
 
 #ifndef _CFG_TYPES_H_
 #define _CFG_TYPES_H_
@@ -93,17 +81,35 @@ typedef uint32_t    varCoreBinding;
 /* Enum */
 typedef enum
 {
-    G_EMPTY_VAR,
-    G_CTRL_PARAMETER_TABLE,
-    G_CTRL_INPUT_TABLE,
-    G_CTRL_CONFIG_TABLE,
-    G_CTRL_LMS_CONFIG_TABLE,
-    G_TASKS_CONFIG_TABLE,
-    G_CODE_CONFIG_TABLE,
-    G_SYS_CONFIG_TABLE,
-    //
-    G_TELEMETRY
-} pcf_global_var_e;
+    CTRL_EMPTY,
+
+    CTRL_CONFIG_PARAM,
+    CTRL_THERMAL_PARAM,
+    CTRL_POWER_PARAM,
+    CTRL_INPUT_PARAM,
+    CTRL_OUTPUT_PARAM,
+    CTRL_IDENT_PARAM,
+
+    CTRL_CONFIG_TABLE,
+
+    CTRL_COMMANDS,
+
+    CTRL_TEMP_MEASURES,
+    CTRL_POWER_MEASURES,
+    CTRL_PERF_MEASURES,
+
+    CTRL_MEASURES,
+
+    CTRL_INPUT_PROCESS,
+    CTRL_MOVING_AVERAGE,
+    CTRL_THERMAL,
+    CTRL_OUTPUT,
+
+    CTRL_VALUE_TABLE,
+
+    //TODO atm we don't know
+    CTRL_TLEMETRY
+} pcf_ctrl_struct_e;
 
 typedef enum
 {
@@ -121,18 +127,6 @@ typedef enum
 //TODO
 #define VV_MOVING_AVERAGE 3
 #define VV_COUPLING_SOLUTION 4
-
-
-/*******************/
-/*** Data Struct ***/
-/*******************/
-typedef struct _sensor_data {
-	varValue frequency;
-	varValue voltage;
-	varValue temperature;
-	//uint16_t Core; //TBD
-} sensor_data_t;
-
 
 
 /*******************/

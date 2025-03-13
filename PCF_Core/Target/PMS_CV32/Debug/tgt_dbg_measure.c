@@ -1,4 +1,3 @@
-
 /*************************************************************************
 *
 * Copyright 2023 ETH Zurich and University of Bologna
@@ -19,18 +18,6 @@
 * Author: Giovanni Bambini (gv.bambini@gmail.com)
 *
 **************************************************************************/
-
-
-/***************************************************/
-/*
-* Library to perform the measurement for the project,
-* Using FreeRTOS
-*
-* Date of creation: 31/05/2019
-*
-* Date of Last Modification: 31/05/2019
-*
-*/
 
 #include "tgt_dbg_measure.h"
 #include "tgt_init.h"
