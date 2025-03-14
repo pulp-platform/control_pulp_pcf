@@ -1,23 +1,23 @@
 /*************************************************************************
-*
-* Copyright 2023 ETH Zurich and University of Bologna
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-* SPDX-License-Identifier: Apache-2.0
-* Author: Giovanni Bambini (gv.bambini@gmail.com)
-*
-**************************************************************************/
+ *
+ * Copyright 2023 ETH Zurich and University of Bologna
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * Author: Giovanni Bambini (gv.bambini@gmail.com)
+ *
+ **************************************************************************/
 
 #ifndef _CFG_TYPES_H_
 #define _CFG_TYPES_H_
@@ -27,92 +27,80 @@
 /* Others */
 #include <stdint.h>
 
-//#define CONTROL_DATA_TYPE     1
+// #define CONTROL_DATA_TYPE     1
 
 /*******************/
 /*** Data Types ****/
 /*******************/
 
-//TODO: These below are Target-dependent!!
+// TODO: These below are Target-dependent!!
 
 // varBool_e
-typedef enum
-{
-    PCF_FALSE                 = 0x0,	 // False / Inactive / No
-    PCF_TRUE                  = 0x1 // True / Active / Yes
+typedef enum {
+    PCF_FALSE = 0x0, // False / Inactive / No
+    PCF_TRUE = 0x1   // True / Active / Yes
 } varBool_e;
 
 // varValue
-#if (CONTROL_DATA_TYPE == 1)    //float
-typedef float 	varValue;
-#elif (CONTROL_DATA_TYPE == 2)  //float16
-//typedef float16 varValue;
-#elif (CONTROL_DATA_TYPE == 3)  //fixed int
-//typedef ... varValue;
+#if (CONTROL_DATA_TYPE == 1) // float
+typedef float varValue;
+#elif (CONTROL_DATA_TYPE == 2) // float16
+// typedef float16 varValue;
+#elif (CONTROL_DATA_TYPE == 3) // fixed int
+// typedef ... varValue;
 #else
-typedef int 	varValue;
+typedef int varValue;
 #endif
 
 // varFor
-typedef int 	varFor;
+typedef int varFor;
 
 // varShInt
-//typedef int 	varShortInt;
+// typedef int 	varShortInt;
 
 // varShUnsInt
-//typedef uint32_t 	varShortUInt;
+// typedef uint32_t 	varShortUInt;
 
 // varCounter
-typedef int32_t 	varCounter;
+typedef int32_t varCounter;
 
 // varShCounter
-typedef int16_t 	varShortCounter;
+typedef int16_t varShortCounter;
 
 // varError
-typedef uint32_t    varError;
+typedef uint32_t varError;
 
 // varFreqRedMap
-typedef uint16_t    varFreqRedMap;
+typedef uint16_t varFreqRedMap;
 
-typedef uint32_t    varCoreBinding;
-
-
+typedef uint32_t varCoreBinding;
 
 /* Enum */
-typedef enum
-{
+typedef enum {
     CTRL_EMPTY,
-
     CTRL_CONFIG_PARAM,
     CTRL_THERMAL_PARAM,
     CTRL_POWER_PARAM,
     CTRL_INPUT_PARAM,
     CTRL_OUTPUT_PARAM,
     CTRL_IDENT_PARAM,
-
     CTRL_CONFIG_TABLE,
-
     CTRL_COMMANDS,
-
     CTRL_TEMP_MEASURES,
     CTRL_POWER_MEASURES,
     CTRL_PERF_MEASURES,
-
     CTRL_MEASURES,
-
     CTRL_INPUT_PROCESS,
     CTRL_MOVING_AVERAGE,
     CTRL_THERMAL,
     CTRL_OUTPUT,
-
     CTRL_VALUE_TABLE,
 
-    //TODO atm we don't know
+    // TODO atm we don't know
     CTRL_TLEMETRY
 } pcf_ctrl_struct_e;
 
-typedef enum
-{
+typedef enum {
     GLOBAL_WRITE_NOTHING,
     GLOBAL_WRITE_ALL,
     //
@@ -124,22 +112,20 @@ typedef enum
     GLOBAL_WRITE_POWER_FORMULA_COEFF
 } global_var_write_cmd_e;
 
-//TODO
+// TODO
 #define VV_MOVING_AVERAGE 3
 #define VV_COUPLING_SOLUTION 4
-
 
 /*******************/
 /*** Enum Struct ***/
 /*******************/
-enum pcf_tasks_e
-{
+enum pcf_tasks_e {
     /** ATTENTION! **/
     /* Put first the periodic tasks, and after the non-periodic tasks */
     /* First of the periodi task is PERIODIC_CONTROL_TASK */
-    //TBD: is this safe enough????
+    // TBD: is this safe enough????
 
-    //Periodic Tasks
+    // Periodic Tasks
     PERIODIC_CONTROL_TASK,
     REAR_CONTROL_TASK,
     FAST_CONTROL_TASK,
@@ -147,18 +133,17 @@ enum pcf_tasks_e
     MAIN_TASK,
     USER_DEFINED_TASK,
 
-    //Non-Periodic Tasks
-    #if (defined(DEBUG_ACTIVE) || (MEASURE_ACTIVE == 1))
+// Non-Periodic Tasks
+#if (defined(DEBUG_ACTIVE) || (MEASURE_ACTIVE == 1))
     DEBUG_TASK
-    #endif
+#endif
 };
-
 
 /***************************************/
 /*** Defined Values ***/
 
-//TBC: should I put 0xFFFFFFFF?
-//#define VAR_VALUE_BYTES_NUM 4
+// TBC: should I put 0xFFFFFFFF?
+// #define VAR_VALUE_BYTES_NUM 4
 
 #if ((CONTROL_DATA_TYPE == 1) || (CONTROL_DATA_TYPE == 2))
 #define VD_100_PERC 100.0f
@@ -184,5 +169,4 @@ enum pcf_tasks_e
 #define VD_TEMP_INIT 300
 #endif
 
-
-#endif //lib #ifdef
+#endif // lib #ifdef
