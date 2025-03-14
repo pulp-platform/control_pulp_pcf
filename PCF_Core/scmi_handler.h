@@ -19,30 +19,48 @@
  *
  **************************************************************************/
 
-#ifndef _PCF_IMP_COMMS_H_
-#define _PCF_IMP_COMMS_H_
+#ifndef _PCF_SCMI_HANDLER_H_
+#define _PCF_SCMI_HANDLER_H_
+#ifdef SCMI_ACTIVE
 
-/* Libraries Inclusion */
-#include "cfg_types.h"
-#include "cfg_control.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <inttypes.h>
 
-// todo remove
-#include "cfg_firmware.h"
+/* system includes */
+#include "system.h"
+#include "io.h"
+#include "irq.h"
+#include "csr.h"
+#include "clic.h"
+#include "scmi.h"
 
-varBool_e bImpCommsInit(void);
-varBool_e bImpSendCoreFreq(varValue *i_computed_freq);
-varBool_e bImpSendDomainVoltages(varValue *i_computed_voltage);
-varBool_e bImpReadTempRequest(varValue *o_measured_temp);
-// varBool_e bImpReadCoreTemp(varValue *o_measured_temp);
+/* pmsis */
+// #include "target.h"
+// #include "os.h"
 
-varBool_e bImpReadInputParameters(struct ctrl_commands *i_table_ptr);
+// TODO:
+#define MBOX_START_ADDRESS 0xFFFF0000
+#define INTR_ID 32
+#define CLIC_BASE_ADDR 0x1A200000
+#define CLIC_END_ADDR 0x1A20FFFF
+#define SUCCESS 0x0
+#define FC_TIMER_BASE_ADDR 0x1B200400
+#define ARCHI_TIMER_SIZE 0x00000800
+#define FC_TIMER_ADDR (0x1A100000 0x0000B000)
+#define DRAM_BASE_ADDR 0x20000000
 
-varBool_e bImpReadInstructionComposition(struct performance_measures *i_table_ptr);
-varBool_e bImpReadPowerMeasure(struct power_measures *i_table_ptr);
+uint32_t scmi_target_frequency;
+// TODO:
+uint32_t scmi_target_changed;
+#define SCMI_CORE 2
 
-// TODO: remove this probably.
-varBool_e bImpWriteFreqRedMap(telemetry_t *i_telemetry);
+void scmi_init(void);
+void enable_scmi_interrupt(void);
+void callee_scmi_handler(void);
 
-int lImpUserFunction(void *ptr);
+int lowered_freq;
+float fast_freq[4];
 
+#endif // SCMI_ACTIVE
 #endif // lib #ifdef
